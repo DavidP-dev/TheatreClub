@@ -20,5 +20,3 @@ let unregister (conn:IDbConnection) (cM:ClubMember) =
     | None -> failwith "Takový uživatel v databází neexistuje."
 
 // Takes a database connection and performance and inserts performance to database
-let addPerformance (conn:IDbConnection) (cM:ClubMember) =
-    

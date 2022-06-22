@@ -213,12 +213,60 @@ let returnAllClubMembersFromDb (conn:IDbConnection) =
     
     let v = output.Result
     v
-    |> Seq.tryHead
-    |> Option.map (fun x -> MembersDb.toDomain x)
+    |> Seq.toList |> List.map(MembersDb.toDomain)
+
+// Returns all performances
+let returnAllPerformancesFromDb (conn:IDbConnection) =
+    let output =
+        select {
+    for p in performancesTable do
+    selectAll}
+        |> conn.SelectAsync<PerformanceDB>
     
-// Returns club members by preferred genres    
-// Returns performances by Genres
+    let v = output.Result
+    v
+    |> Seq.toList |> List.map(PerformancesDB.toDomain)
+
 // Returns all reservations
+let returnAllReservationsFromDb (conn:IDbConnection) =
+    let output =
+        select {
+    for r in ReservationsTable do
+    selectAll}
+        |> conn.SelectAsync<ReservationDB>
+    
+    let v = output.Result
+    v
+    |> Seq.toList |> List.map(ReservationDB.toDomain)
+
 
 // Returns all undelivered reservations
+let returnAllUndeliveredReservations (conn:IDbConnection) =
+    let output =
+        select {
+            for r in ReservationsTable do
+            where (r.TicketsReceived = false)
+            }
+        |> conn.SelectAsync<ReservationDB>
+    
+    let v = output.Result
+    v
+    |> Seq.toList |> List.map(ReservationDB.toDomain)
+
 // Returns all unpaid reservation
+let returnAllUnpaidReservations (conn:IDbConnection) =
+    let output =
+        select {
+            for r in ReservationsTable do
+            where (r.IsPaid = false)
+            }
+        |> conn.SelectAsync<ReservationDB>
+    
+    let v = output.Result
+    v
+    |> Seq.toList |> List.map(ReservationDB.toDomain)
+
+// Returns club members by preferred genres    
+
+// Returns performances by Genres
+
