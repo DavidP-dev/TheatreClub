@@ -7,9 +7,8 @@ open Domain
 open Dapper.FSharp
 open Dapper.FSharp.MSSQL
 open Microsoft.Data.SqlClient
-open Microsoft.VisualBasic
 
-// Connection to dabase
+// Connection to database
 let connstring = "data source=PICHA\\sqlexpress;initial catalog=TheatreClubDBTest;integrated security=True;TrustServerCertificate=True"
 
 let getConnection () : IDbConnection =
@@ -129,7 +128,6 @@ let ReservationsTable = table'<ReservationDB> "Reservations"
 
 // Checks existence of club member by searching for his email in database
 let tryGetMemberByEmail (conn : IDbConnection) (email : string) =
-    //let dbMember = MembersDb.toDatabase cM
     let vysl =
         select {
             for m in membersTable do
@@ -142,6 +140,17 @@ let tryGetMemberByEmail (conn : IDbConnection) (email : string) =
     v
     |> Seq.tryHead
     |> Option.map (fun x -> MembersDb.toDomain x)
+    
+    
+//    task {
+//        let! vysl =
+//            select {
+//                for m in membersTable do
+//                where (m.Email = email)
+//            }
+//            |> conn.SelectAsync<MemberDB>
+//        vysl |> Seq.tryHead 
+//    }
 
 // adds Member to database
 
@@ -195,8 +204,21 @@ let removeReservationFromDb (conn:IDbConnection) (res:Reservation) =
     |> conn.DeleteAsync
 
 // Returns all club members in database
-// Returns club members by preffered genres
+let returnAllClubMembersFromDb (conn:IDbConnection) =
+    let output =
+        select {
+    for m in membersTable do
+    selectAll}
+        |> conn.SelectAsync<MemberDB>
+    
+    let v = output.Result
+    v
+    |> Seq.tryHead
+    |> Option.map (fun x -> MembersDb.toDomain x)
+    
+// Returns club members by preferred genres    
 // Returns performances by Genres
 // Returns all reservations
+
 // Returns all undelivered reservations
 // Returns all unpaid reservation
