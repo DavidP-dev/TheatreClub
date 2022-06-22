@@ -268,7 +268,8 @@ let returnAllUnpaidReservations (conn:IDbConnection) =
 
 // Returns club members by preferred genres    
 let returnClubMembersByGenre (conn:IDbConnection) (genres : Genre list) =
-    let genreStringList = genres |> List.map(MembersDb.genreToString) |> 
+    let genreStringList = genres |> List.map(MembersDb.genreToString)
+    let genreStringLenght = genreStringList |> List.length
     let output =
         select {
             for m in membersTable do
