@@ -126,15 +126,6 @@ let ReservationsTable = table'<ReservationDB> "Reservations"
 
 
  
-// funkce add Member to db
-
-let insert (conn:IDbConnection) (cM:ClubMember) =
-    let dbMember = MembersDb.toDatabase cM
-    insert {
-        into membersTable
-        value dbMember
-    }
-    |> conn.InsertAsync
 
 // Checks existence of club member by searching for his email in database
 let tryGetMemberByEmail (conn : IDbConnection) (email : string) =
@@ -152,15 +143,60 @@ let tryGetMemberByEmail (conn : IDbConnection) (email : string) =
     |> Seq.tryHead
     |> Option.map (fun x -> MembersDb.toDomain x)
 
+// adds Member to database
 
-// function remove Member
+let insertCMToDb (conn:IDbConnection) (cM:ClubMember) =
+    let dbMember = MembersDb.toDatabase cM
+    insert {
+        into membersTable
+        value dbMember
+    }
+    |> conn.InsertAsync
+
+
+// removes Member from Database
+let removeCmFromDb (conn:IDbConnection) (cM:ClubMember) =
+    delete {
+        for m in membersTable do
+        where (m.Id = cM.Id )}
+    |> conn.DeleteAsync
+
 
 // function add Performance
-
+let addPerformanceToDb (conn:IDbConnection) (perf:Performance) =
+    let dbPerformance = PerformancesDB.toDatabase perf
+    insert {
+        into performancesTable
+        value dbPerformance
+    }
+    |> conn.InsertAsync
+    
 // function remove Performance
+let removePerformanceFromDb (conn:IDbConnection) (perf:Performance) =
+    delete {
+        for p in performancesTable do
+        where (p.Id = perf.Id )}
+    |> conn.DeleteAsync
 
 // function add Reservation
+let addReservationToDb (conn:IDbConnection) (res:Reservation) =
+    let dbReservation = ReservationDB.toDatabase res
+    insert {
+        into ReservationsTable
+        value dbReservation
+    }
+    |> conn.InsertAsync
 
 // function remove Reservation
+let removeReservationFromDb (conn:IDbConnection) (res:Reservation) =
+    delete {
+        for r in ReservationsTable do
+        where (r.ReservationID = res.ReservationID )}
+    |> conn.DeleteAsync
 
 // Returns all club members in database
+// Returns club members by preffered genres
+// Returns performances by Genres
+// Returns all reservations
+// Returns all undelivered reservations
+// Returns all unpaid reservation

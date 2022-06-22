@@ -86,4 +86,4 @@ let david = {
 
 let conn = Database.getConnection ()
 
-register conn david
+unregister conn david
