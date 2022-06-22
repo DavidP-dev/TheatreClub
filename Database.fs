@@ -267,6 +267,18 @@ let returnAllUnpaidReservations (conn:IDbConnection) =
     |> Seq.toList |> List.map(ReservationDB.toDomain)
 
 // Returns club members by preferred genres    
-
+let returnClubMembersByGenre (conn:IDbConnection) (genres : Genre list) =
+    let genreStringList = genres |> List.map(MembersDb.genreToString) |> 
+    let output =
+        select {
+            for m in membersTable do
+            where (m.PreferredGenres = genreStringList)
+            }
+        |> conn.SelectAsync<ReservationDB>
+    
+    let v = output.Result
+    v
+    |> Seq.toList |> List.map(ReservationDB.toDomain)
+    
 // Returns performances by Genres
 
