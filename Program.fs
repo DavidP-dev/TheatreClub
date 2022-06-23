@@ -34,5 +34,3 @@ let encyklopedie = {
 let conn = Database.getConnection ()
 
 addPerformance conn encyklopedie
-
-getAllClubMembers conn

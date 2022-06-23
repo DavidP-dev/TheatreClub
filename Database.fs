@@ -96,12 +96,13 @@ module MembersDb =
 
 module PerformancesDB =
     let toDomain (db:PerformanceDB) : Performance = {
+        Id = db.Id
         Title = db.Title
         Theatre = db.Theatre
         DateAndTime = db.DateAndTime
         Cost = db.Cost
         Genres =  db.Genres.Split(",") |> Array.map MembersDb.parseGenre |> List.ofArray
-        Id = db.Id}
+        }
     
     let toDatabase (dm:Performance) : PerformanceDB = {
         Id = dm.Id
@@ -193,7 +194,7 @@ let insertCMToDb (conn:IDbConnection) (cM:ClubMember) =
 let removeCmFromDb (conn:IDbConnection) (cM:ClubMember) =
     delete {
         for m in membersTable do
-        where (m.Id = cM.Id )}
+        where (m.Email = cM.Email )}
     |> conn.DeleteAsync
 
 // function add Performance
