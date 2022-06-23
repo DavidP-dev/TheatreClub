@@ -81,3 +81,5 @@ let getClubMembersByGenre (conn:IDbConnection) (genre:Genre) =
 let getPerformancesByGenre (conn:IDbConnection) (genre:Genre) =
     let performanceByGenreList = returnPerformancesByGenre conn genre
     printfn "Zde je seznam představení dle zadaného žánru: %A" performanceByGenreList
+    
+    
