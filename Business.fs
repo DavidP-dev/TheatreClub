@@ -68,7 +68,16 @@ let getAllUndeliveredReservations (conn:IDbConnection) =
     printfn "Zde je aktuální seznam nedoručených vstupenek: %A" undeliveredReservationsList
     
 // Returns all unpaid reservations
-let getAllUnpaidreservations (conn:IDbConnection) =
+let getAllUnpaidReservations (conn:IDbConnection) =
     let unPaidReservationsList = returnAllUnpaidReservations conn
     printfn "Zde je aktuální seznam nezaplacených objednávek %A" unPaidReservationsList
 
+// Return club members by genre
+let getClubMembersByGenre (conn:IDbConnection) (genre:Genre) =
+    let membersByPreferenceList = returnClubMembersByGenre conn genre
+    printfn "Zde je seznam členů se zadanou preferencí: %A" membersByPreferenceList
+
+// Return performance by genre
+let getPerformancesByGenre (conn:IDbConnection) (genre:Genre) =
+    let performanceByGenreList = returnPerformancesByGenre conn genre
+    printfn "Zde je seznam představení dle zadaného žánru: %A" performanceByGenreList
