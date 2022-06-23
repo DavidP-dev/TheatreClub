@@ -16,7 +16,7 @@ let register (conn:IDbConnection) (cM:ClubMember) =
 let unregister (conn:IDbConnection) (cM:ClubMember) =
     let maybeMember = tryGetMemberByEmail conn cM.Email
     match maybeMember with
-    | Some(maybeMember) -> removeCmFromDb conn cM
+    | Some x -> removeCmFromDb conn cM
     | None -> failwith "Takový uživatel v databází neexistuje."
 
 // Checks performance existence and inserts performance to database
@@ -37,12 +37,38 @@ let removePerformance (conn:IDbConnection) (perf:Performance) =
 let addReservation (conn:IDbConnection) (res:Reservation) =
     let maybeReservation = tryGetReservationByIds conn res
     match maybeReservation with
-    | Some ex -> failwith $"Rezervace ID {res.ReservationID} je už databázi." 
+    | Some (maybeReservation) -> failwith $"Rezervace ID {res.ReservationID} je už databázi." 
     | None -> addReservationToDb conn res
     
 // Checks reservation existence and removes reservation from database
 let removeReservation (conn:IDbConnection) (res:Reservation) =
     let maybeReservation = tryGetReservationByIds conn res
     match maybeReservation with
-    | Some ex -> failwith $"Rezervace ID {res.ReservationID} je už databázi." 
-    | None -> addReservationToDb conn res
+    | Some (maybeReservation) -> failwith "Taková rezervace v dabázi neexistuje." 
+    | None -> removeReservationFromDb conn res
+
+// Returns all Club members from database
+let getAllClubMembers (conn:IDbConnection) =
+    let clubMemberList = returnAllClubMembersFromDb conn
+    printfn "Zde je aktuální seznam členů klubu: %A" clubMemberList 
+
+// Returns all performances
+let getAllPerformances (conn:IDbConnection) =
+    let performancesList = returnAllPerformancesFromDb conn
+    printfn "Zde je aktuální seznam her v dabázi: %A" performancesList
+    
+// Returns all reservations
+let getAllReservations (conn:IDbConnection) =
+    let reservationsList = returnAllReservationsFromDb conn
+    printfn "Zde je aktuální seznam rezervací: %A" reservationsList
+    
+// Returns all undelivered reservations
+let getAllUndeliveredReservations (conn:IDbConnection) =
+    let undeliveredReservationsList = returnAllUndeliveredReservations conn
+    printfn "Zde je aktuální seznam nedoručených vstupenek: %A" undeliveredReservationsList
+    
+// Returns all unpaid reservations
+let getAllUnpaidreservations (conn:IDbConnection) =
+    let unPaidReservationsList = returnAllUnpaidReservations conn
+    printfn "Zde je aktuální seznam nezaplacených objednávek %A" unPaidReservationsList
+
