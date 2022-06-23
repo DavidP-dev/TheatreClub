@@ -7,6 +7,7 @@ open Domain
 open Dapper.FSharp
 open Dapper.FSharp.MSSQL
 open Microsoft.Data.SqlClient
+open Microsoft.FSharp.Core
 
 // Connection to database
 let connstring = "data source=PICHA\\sqlexpress;initial catalog=TheatreClubDBTest;integrated security=True;TrustServerCertificate=True"
@@ -67,7 +68,18 @@ module MembersDb =
         | Mainstream -> "Mainstream"
         | Musical -> "Musical"
         | Philosophy -> "Philosophy"
-            
+    
+    let dapperGenreString (gn : Genre) : string =
+        match gn with
+        | Alternative -> "%Alternative%"
+        | Art -> "%Art%"
+        | Comedy -> "%Comedy%"
+        | Dance -> "%Dance%"  
+        | Drama -> "%Drama%"
+        | Mainstream -> "%Mainstream%"
+        | Musical -> "%Musical%"
+        | Philosophy -> "%Philosophy%"
+        
     let toDomain (db:MemberDB) : ClubMember = {
        Id = db.Id
        Name = db.Name
@@ -205,39 +217,42 @@ let removeReservationFromDb (conn:IDbConnection) (res:Reservation) =
 
 // Returns all club members in database
 let returnAllClubMembersFromDb (conn:IDbConnection) =
-    let output =
-        select {
-    for m in membersTable do
-    selectAll}
-        |> conn.SelectAsync<MemberDB>
+        let output =
+            select {
+                for m in membersTable do
+                selectAll
+                }
+            |> conn.SelectAsync<MemberDB>
     
-    let v = output.Result
-    v
-    |> Seq.toList |> List.map(MembersDb.toDomain)
+        let v = output.Result
+        v
+        |> Seq.toList |> List.map(MembersDb.toDomain)
 
 // Returns all performances
 let returnAllPerformancesFromDb (conn:IDbConnection) =
-    let output =
-        select {
-    for p in performancesTable do
-    selectAll}
-        |> conn.SelectAsync<PerformanceDB>
+        let output =
+            select {
+                for p in performancesTable do
+                selectAll
+                }
+            |> conn.SelectAsync<PerformanceDB>
     
-    let v = output.Result
-    v
-    |> Seq.toList |> List.map(PerformancesDB.toDomain)
+        let v = output.Result
+        v
+        |> Seq.toList |> List.map(PerformancesDB.toDomain)
 
 // Returns all reservations
 let returnAllReservationsFromDb (conn:IDbConnection) =
-    let output =
-        select {
-    for r in ReservationsTable do
-    selectAll}
-        |> conn.SelectAsync<ReservationDB>
+        let output =
+            select {
+                for r in ReservationsTable do
+                selectAll
+                }
+            |> conn.SelectAsync<ReservationDB>
     
-    let v = output.Result
-    v
-    |> Seq.toList |> List.map(ReservationDB.toDomain)
+        let v = output.Result
+        v
+        |> Seq.toList |> List.map(ReservationDB.toDomain)
 
 
 // Returns all undelivered reservations
@@ -258,8 +273,7 @@ let returnAllUnpaidReservations (conn:IDbConnection) =
     let output =
         select {
             for r in ReservationsTable do
-            where (r.IsPaid = false)
-            }
+            where (r.IsPaid = false)}
         |> conn.SelectAsync<ReservationDB>
     
     let v = output.Result
@@ -267,19 +281,28 @@ let returnAllUnpaidReservations (conn:IDbConnection) =
     |> Seq.toList |> List.map(ReservationDB.toDomain)
 
 // Returns club members by preferred genres    
-let returnClubMembersByGenre (conn:IDbConnection) (genres : Genre list) =
-    let genreStringList = genres |> List.map(MembersDb.genreToString)
-    let genreStringLenght = genreStringList |> List.length
+let returnClubMembersByGenre (conn:IDbConnection) (genre : Genre) =
+    let genreString = MembersDb.dapperGenreString genre
     let output =
-        select {
-            for m in membersTable do
-            where (m.PreferredGenres = genreStringList)
-            }
-        |> conn.SelectAsync<ReservationDB>
+         select {
+             for m in membersTable do
+             where (like m.PreferredGenres genreString)}
+             |> conn.SelectAsync<MemberDB>
     
     let v = output.Result
     v
-    |> Seq.toList |> List.map(ReservationDB.toDomain)
+    |> Seq.toList |> List.map(MembersDb.toDomain)
     
 // Returns performances by Genres
-
+let returnPerformancesByGenre (conn:IDbConnection) (genre : Genre) =
+    let genreString = MembersDb.dapperGenreString genre
+    let output =
+         select {
+             for p in performancesTable do
+             where (like p.Genres genreString)}
+             |> conn.SelectAsync<PerformanceDB>
+    
+    let v = output.Result
+    v
+    |> Seq.toList |> List.map(PerformancesDB.toDomain)
+    
