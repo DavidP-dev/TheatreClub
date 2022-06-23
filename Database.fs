@@ -127,7 +127,7 @@ module ReservationDB =
         TicketsReceived = dm.IsPaid
     }
 
-// names of tables
+// names of database tables
 
 let membersTable = table'<MemberDB> "ClubMembers"
 
@@ -139,7 +139,7 @@ let ReservationsTable = table'<ReservationDB> "Reservations"
  
 
 // Checks existence of club member by searching for his email in database
-let tryGetMemberByEmail (conn : IDbConnection) (email : string) =
+let tryGetMemberByEmail (conn:IDbConnection) (email:string) =
     let vysl =
         select {
             for m in membersTable do
@@ -151,21 +151,25 @@ let tryGetMemberByEmail (conn : IDbConnection) (email : string) =
     let v = vysl.Result
     v
     |> Seq.tryHead
-    |> Option.map (fun x -> MembersDb.toDomain x)
+    |> Option.map MembersDb.toDomain
     
-    
-//    task {
-//        let! vysl =
-//            select {
-//                for m in membersTable do
-//                where (m.Email = email)
-//            }
-//            |> conn.SelectAsync<MemberDB>
-//        vysl |> Seq.tryHead 
-//    }
+// Checks existence of performance in database
+let tryGetPerformanceByTitle (conn:IDbConnection) (title:string) =
+    let vysl =
+        select {
+            for p in performancesTable do
+            where (p.Title = title)}
+        |> conn.SelectAsync<PerformanceDB>
+        
+    let v = vysl.Result
+    v
+    |> Seq.tryHead
+    |> Option.map PerformancesDB.toDomain
 
+// Checks existence of registration in database
+let tryGetReservationByIds (conn:IDbConnection) (performanceId:Guid) (memberId:Guid) =
+    
 // adds Member to database
-
 let insertCMToDb (conn:IDbConnection) (cM:ClubMember) =
     let dbMember = MembersDb.toDatabase cM
     insert {
@@ -181,7 +185,6 @@ let removeCmFromDb (conn:IDbConnection) (cM:ClubMember) =
         for m in membersTable do
         where (m.Id = cM.Id )}
     |> conn.DeleteAsync
-
 
 // function add Performance
 let addPerformanceToDb (conn:IDbConnection) (perf:Performance) =
@@ -254,7 +257,6 @@ let returnAllReservationsFromDb (conn:IDbConnection) =
         v
         |> Seq.toList |> List.map(ReservationDB.toDomain)
 
-
 // Returns all undelivered reservations
 let returnAllUndeliveredReservations (conn:IDbConnection) =
     let output =
@@ -305,4 +307,5 @@ let returnPerformancesByGenre (conn:IDbConnection) (genre : Genre) =
     let v = output.Result
     v
     |> Seq.toList |> List.map(PerformancesDB.toDomain)
+    
     
