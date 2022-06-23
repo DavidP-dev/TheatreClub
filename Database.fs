@@ -8,6 +8,7 @@ open Dapper.FSharp
 open Dapper.FSharp.MSSQL
 open Microsoft.Data.SqlClient
 open Microsoft.FSharp.Core
+open Microsoft.VisualBasic
 
 // Connection to database
 let connstring = "data source=PICHA\\sqlexpress;initial catalog=TheatreClubDBTest;integrated security=True;TrustServerCertificate=True"
@@ -154,11 +155,11 @@ let tryGetMemberByEmail (conn:IDbConnection) (email:string) =
     |> Option.map MembersDb.toDomain
     
 // Checks existence of performance in database
-let tryGetPerformanceByTitle (conn:IDbConnection) (title:string) =
+let tryGetPerformanceByTitle (conn:IDbConnection) (title:String) (dateAndTime:DateTimeOffset) =
     let vysl =
         select {
             for p in performancesTable do
-            where (p.Title = title)}
+            where (p.Title = title && p.DateAndTime = dateAndTime)}
         |> conn.SelectAsync<PerformanceDB>
         
     let v = vysl.Result
@@ -168,7 +169,17 @@ let tryGetPerformanceByTitle (conn:IDbConnection) (title:string) =
 
 // Checks existence of registration in database
 let tryGetReservationByIds (conn:IDbConnection) (performanceId:Guid) (memberId:Guid) =
-    
+    let vysl =
+        select {
+            for r in ReservationsTable do
+            where (r.PerformanceId = performanceId && r.MemberId = memberId)}
+        |> conn.SelectAsync<ReservationDB>
+        
+    let v = vysl.Result
+    v
+    |> Seq.tryHead
+    |> Option.map ReservationDB.toDomain
+
 // adds Member to database
 let insertCMToDb (conn:IDbConnection) (cM:ClubMember) =
     let dbMember = MembersDb.toDatabase cM

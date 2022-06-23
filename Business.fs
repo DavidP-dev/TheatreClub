@@ -21,4 +21,5 @@ let unregister (conn:IDbConnection) (cM:ClubMember) =
 
 // Takes a database connection and performance and inserts performance to database
 let addPerformance (conn:IDbConnection) (perf:Performance) =
+    let maybePerformance = tryGetPerformanceByTitle conn perf
     
