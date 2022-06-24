@@ -30,7 +30,19 @@ let encyklopedie = {
     Cost = 350
     Genres = [Comedy ; Philosophy]
 }
+let encyklopedia_romana = {
+        ReservationID = Guid.NewGuid()
+        MemberId = romana.Id
+        PerformanceId  = Guid.NewGuid()
+        IsPaid = true
+        TicketsReceived = true
+        }
 
-let conn = Database.getConnection ()
 
-addPerformance conn encyklopedie
+[<EntryPoint>]
+let main args =
+    let conn = Database.getConnection ()
+    printfn "Arguments passed to function : %A" args
+    0
+    
+   

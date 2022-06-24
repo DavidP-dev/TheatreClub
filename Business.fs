@@ -16,7 +16,7 @@ let register (conn:IDbConnection) (cM:ClubMember) =
 let unregister (conn:IDbConnection) (cM:ClubMember) =
     let maybeMember = tryGetMemberByEmail conn cM.Email
     match maybeMember with
-    | Some x -> removeCmFromDb conn cM
+    | Some _ -> removeCmFromDb conn cM
     | None -> failwith "Takový uživatel v databází neexistuje."
 
 // Checks performance existence and inserts performance to database
@@ -30,21 +30,21 @@ let addPerformance (conn:IDbConnection) (perf:Performance) =
 let removePerformance (conn:IDbConnection) (perf:Performance) =
     let maybePerformance = tryGetPerformanceByTitleAndDate conn perf
     match maybePerformance with
-    | Some (maybePerformance) -> removePerformanceFromDb conn perf
+    | Some _ -> removePerformanceFromDb conn perf
     | None -> failwith $"Divadlení představení {perf.Title} není v databázi."
     
 // Checks reservation existence and adds reservation to database
 let addReservation (conn:IDbConnection) (res:Reservation) =
     let maybeReservation = tryGetReservationByIds conn res
     match maybeReservation with
-    | Some (maybeReservation) -> failwith $"Rezervace ID {res.ReservationID} je už databázi." 
+    | Some _ -> failwith $"Rezervace ID {res.ReservationID} je už databázi." 
     | None -> addReservationToDb conn res
     
 // Checks reservation existence and removes reservation from database
 let removeReservation (conn:IDbConnection) (res:Reservation) =
     let maybeReservation = tryGetReservationByIds conn res
     match maybeReservation with
-    | Some (maybeReservation) -> failwith "Taková rezervace v dabázi neexistuje." 
+    | Some _ -> failwith "Taková rezervace v dabázi neexistuje." 
     | None -> removeReservationFromDb conn res
 
 // Returns all Club members from database

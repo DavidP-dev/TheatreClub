@@ -252,8 +252,7 @@ let returnAllPerformancesFromDb (conn:IDbConnection) =
             |> conn.SelectAsync<PerformanceDB>
     
         let v = output.Result
-        v
-        |> Seq.toList |> List.map(PerformancesDB.toDomain)
+        v |> Seq.toList |> List.map(PerformancesDB.toDomain)
 
 // Returns all reservations
 let returnAllReservationsFromDb (conn:IDbConnection) =
