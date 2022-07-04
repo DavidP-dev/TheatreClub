@@ -43,6 +43,8 @@ let encyklopedia_romana = {
 let main args =
     let conn = Database.getConnection ()
     printfn "Arguments passed to function : %A" args
+    getAllClubMembers conn
+    
     0
     
-   
+  
